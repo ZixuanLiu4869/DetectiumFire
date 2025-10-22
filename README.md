@@ -53,7 +53,7 @@ This file provides detailed annotations and metadata for each fire image. Each e
 - fire_prompt: Final edited, human-verified fire prompt used for text-to-image generation and fine-tuning diffusion models.
 
 - fire_type: Detailed taxonomy label corresponding to the fire type, following the hierarchical categorization described in Appendix C.4.
-
+ 
 
 
 
@@ -84,12 +84,28 @@ This file contains the codes to cut our original fire videos into 10 seconds cli
 This file contains the codes to generate the train.csv/val.csv/test.csv that follows the format requirements by Timesformer and VideoMamba. Please change line 6, fire_dir="Your path to fire videos directory" and line 7 non_fire_dir="Your path to non fire videos directory" and run the code using python generate_train_val_test_split.py
 
 
-We train the TimeSformer model using the official implemetation from https://github.com/facebookresearch/TimeSformer. After cloning their repo, please place 
+We train the TimeSformer model using the official implemetation from https://github.com/facebookresearch/TimeSformer. After cloning their repo, please place the train.csv/val.csv/test.csv in the TimeSformer directory and run the code
+
+```python
+python tools/run_net.py \
+  --cfg configs/Kinetics/TimeSformer_divST_8x32_224.yaml \
+  DATA.PATH_TO_DATA_DIR . \
+  NUM_GPUS 8 \
+  TRAIN.BATCH_SIZE 8 \
+
+```
+
+You may encounter several errors regarding cannot import name '_linearwithbias' from 'torch.nn.modules.linear', Please simply comment out from torch.nn.modules.linear import _LinearWithBias, which should fix the bugs.
 
 
 
+We train the VideoMamba model using the official implementation from https://github.com/OpenGVLab/VideoMamba.  After cloning their repo, please place the train.csv/val.csv/test.csv in the TimeSformer directory and run the code
 
+```python
+bash ./exp/k400/videomamba_middle_mask/run_f8x224.sh
+```
 
+Please change file ./exp/k400/videomamba_middle_mask/run_f8x224.sh ,line / PREFIX='your path to VideoMamba' and line 8 DATA_PATH='your path to VideoMamba' and change GPUS, GPUS_PER_NODE based on your gpu settings. You may encounter errors regarding TypeError: Mamba.__init__() got an unexpected keyword argument 'bimamba'. Please follow the solution from https://blog.csdn.net/qq_15557299/article/details/136973682, where you should find the path where your mamba_ssm is installed and replace that one with the official code of mamba_ssm in the VideoMamba repo. This will fix the bugs. 
 
 
 
