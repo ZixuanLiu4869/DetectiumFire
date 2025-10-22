@@ -9,6 +9,8 @@ It provides high-quality real and synthetic fire data, detailed annotations, and
 
 ➡️ OpenReview: https://openreview.net/forum?id=vhHYTjMt9Z
 
+➡️ Detectium Startup page: https://detectium.io
+
 This repository contains:
 
 - Code for processing the dataset for training
