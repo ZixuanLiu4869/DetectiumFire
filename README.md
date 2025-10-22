@@ -19,10 +19,16 @@ The image folder contains
 
 ```python
 image/
-├── image_caption_gemini.py    # Code to caption 
+├── image_caption_gemini.py    # Code to caption our image using LLMs
 └── fire_prompts.json  # Metadata and fire descriptions
 
 ```
+🧾image_caption_gemini.py
+
+This file contains the code to caption the image using LLMs (e.g., GPT-4o, Gemini).
+Please replace lines 16-20 with your API key and code for querying your LLMs.
+
+
 
 🧾 fire_prompts.json
 
@@ -56,11 +62,34 @@ The video folder contains
 
 
 ```python
-image/
-├── 
-└── fire_prompts.json  # Metadata and fire descriptions
+video/
+├── caption_video_gemini.py   # Code to caption our video using LLMs
+├── cut_to_10s.py    # Code to cut the original videos into 10 second clips
+└── generate_train_val_test_split.py  # Code to generate train/val/test dataset
 
 ```
+
+🧾 caption_video_gemini.py
+
+This file contain the codes for caption our video using LLMs. The results will be released in the furture version.
+
+
+🧾 cut_to_10s.py
+
+This file contains the codes to cut our original fire videos into 10 seconds clips for training using either TimeSformer or VideoMamba. Please change line 58 source_folder = "Your video path" and line 59 output_folder = "your output folder" and run the code using python cut_to_10s.py.
+
+🧾 generate_train_val_test_split.py
+
+
+This file contains the codes to generate the train.csv/val.csv/test.csv that follows the format requirements by Timesformer and VideoMamba. Please change line 6, fire_dir="Your path to fire videos directory" and line 7 non_fire_dir="Your path to non fire videos directory" and run the code using python generate_train_val_test_split.py
+
+
+We train the TimeSformer model using the official implemetation from https://github.com/facebookresearch/TimeSformer. After cloning their repo, please place 
+
+
+
+
+
 
 
 
