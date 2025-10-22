@@ -1,32 +1,41 @@
 # DetectiumFire: A Comprehensive Multi-modal Dataset Bridging Vision and Language for Fire Understanding
 
-DetectiumFire is a large-scale, multi-modal dataset designed to advance fire understanding in both traditional computer vision and modern vision-language tasks. 
+**DetectiumFire** is a large-scale, multi-modal dataset designed to advance fire understanding in both traditional computer vision and modern vision-language tasks. 
 It provides high-quality real and synthetic fire data, detailed annotations, and human preference feedback for training and evaluating object detectors, diffusion models, and vision-language models (VLMs). 
 
-The whole dataset can be found at https://www.kaggle.com/datasets/38b79c344bdfc55d1eed3d22fbaa9c31fad45e27edbbe9e3c529d6e5c4f93890.
+➡️ Dataset: https://www.kaggle.com/datasets/38b79c344bdfc55d1eed3d22fbaa9c31fad45e27edbbe9e3c529d6e5c4f93890.
 
-The associated models, such as object detectors (e.g., YOLO families), diffusion models (e.g., Stable Diffusion) can be found at ?
+➡️ Associated models (YOLO families, Stable Diffusion, etc.): https://www.kaggle.com/models/yimengfuyao/detectiumfire-models.
 
-This repo contains the codes for processing our dataset for training, information regarding training the related models and the meta data of the dataset.
+➡️ OpenReview: https://openreview.net/forum?id=vhHYTjMt9Z
+
+This repository contains:
+
+- Code for processing the dataset for training
+
+- Information regarding training the related models
+
+- Metadata for the dataset
 
 
-We will iterative updates our dataset and estimate to introduce DetectiumFire-Plus, which will include more recent fire-related images. We welcome community feedback to grow DetectiumFire in both scale and impact!
+We will iteratively update our dataset and plan to introduce **DetectiumFire-Plus**, which will include more recent fire-related images. We welcome community feedback to grow DetectiumFire in both scale and impact!
 
+---
 
-The image folder contains
+## 📁 Repository Structure
 
-**Folder Structure**
+### `image/`
 
 ```python
 image/
-├── image_caption_gemini.py    # Code to caption our image using LLMs
+├── image_caption_gemini.py    # Code to caption images using LLMs
 └── fire_prompts.json  # Metadata and fire descriptions
 
 ```
 🧾image_caption_gemini.py
 
-This file contains the code to caption the image using LLMs (e.g., GPT-4o, Gemini).
-Please replace lines 16-20 with your API key and code for querying your LLMs.
+Code to caption images using LLMs (e.g., GPT-4o, Gemini).
+Please replace lines 16–20 with your API key and your LLM query code.
 
 
 
@@ -55,10 +64,7 @@ This file provides detailed annotations and metadata for each fire image. Each e
 - fire_type: Detailed taxonomy label corresponding to the fire type, following the hierarchical categorization described in Appendix C.4.
  
 
-
-
-The video folder contains
-
+### `video/`
 
 
 ```python
@@ -71,43 +77,106 @@ video/
 
 🧾 caption_video_gemini.py
 
-This file contain the codes for caption our video using LLMs. The results will be released in the furture version.
+Code for captioning videos using LLMs.
+The results will be released in a future version.
 
 
 🧾 cut_to_10s.py
 
-This file contains the codes to cut our original fire videos into 10 seconds clips for training using either TimeSformer or VideoMamba. Please change line 58 source_folder = "Your video path" and line 59 output_folder = "your output folder" and run the code using python cut_to_10s.py.
+Cuts original fire videos into 10-second clips for training with TimeSformer or VideoMamba.
+Edit the paths and run:
+
+```python
+
+# In cut_to_10s.py
+# line 58:
+source_folder = "YOUR_VIDEO_PATH"
+# line 59:
+output_folder = "YOUR_OUTPUT_FOLDER"
+
+python cut_to_10s.py
+
+```
+
 
 🧾 generate_train_val_test_split.py
 
 
-This file contains the codes to generate the train.csv/val.csv/test.csv that follows the format requirements by Timesformer and VideoMamba. Please change line 6, fire_dir="Your path to fire videos directory" and line 7 non_fire_dir="Your path to non fire videos directory" and run the code using python generate_train_val_test_split.py
+Generates `train.csv`, `val.csv`, `test.csv` in the formats required by TimeSformer and VideoMamba.
+Edit the directories and run:
+```python
+# In generate_train_val_test_split.py
+# line 6:
+fire_dir = "PATH_TO_FIRE_VIDEOS"
+# line 7:
+non_fire_dir = "PATH_TO_NON_FIRE_VIDEOS"
+
+python generate_train_val_test_split.py
+
+```
+
+---
 
 
-We train the TimeSformer model using the official implemetation from https://github.com/facebookresearch/TimeSformer. After cloning their repo, please place the train.csv/val.csv/test.csv in the TimeSformer directory and run the code
+## 🏋️ Training Notes
+
+### TimeSformer
+
+
+Official implementation: https://github.com/facebookresearch/TimeSformer
+
+After cloning their repo, place `train.csv`, `val.csv`, and `test.csv` in the TimeSformer directory, then run:
+
 
 ```python
+
 python tools/run_net.py \
   --cfg configs/Kinetics/TimeSformer_divST_8x32_224.yaml \
   DATA.PATH_TO_DATA_DIR . \
   NUM_GPUS 8 \
-  TRAIN.BATCH_SIZE 8 \
+  TRAIN.BATCH_SIZE 8
 
 ```
 
-You may encounter several errors regarding cannot import name '_linearwithbias' from 'torch.nn.modules.linear', Please simply comment out from torch.nn.modules.linear import _LinearWithBias, which should fix the bugs.
+**Common issue**:
+You may see an import error like `cannot import name '_LinearWithBias' from 'torch.nn.modules.linear'`.
+
+**Workaround**: comment out the line
 
 
+```python
+from torch.nn.modules.linear import _LinearWithBias
 
-We train the VideoMamba model using the official implementation from https://github.com/OpenGVLab/VideoMamba.  After cloning their repo, please place the train.csv/val.csv/test.csv in the TimeSformer directory and run the code
+```
+
+in the offending file.
+
+
+### VideoMamba
+
+Official implementation: https://github.com/OpenGVLab/VideoMamba
+
+After cloning their repo, place `train.csv`, `val.csv`, and `test.csv` in the TimeSformer directory, then run:
 
 ```python
 bash ./exp/k400/videomamba_middle_mask/run_f8x224.sh
+
 ```
 
-Please change file ./exp/k400/videomamba_middle_mask/run_f8x224.sh ,line / PREFIX='your path to VideoMamba' and line 8 DATA_PATH='your path to VideoMamba' and change GPUS, GPUS_PER_NODE based on your gpu settings. You may encounter errors regarding TypeError: Mamba.__init__() got an unexpected keyword argument 'bimamba'. Please follow the solution from https://blog.csdn.net/qq_15557299/article/details/136973682, where you should find the path where your mamba_ssm is installed and replace that one with the official code of mamba_ssm in the VideoMamba repo. This will fix the bugs. 
+Edit `./exp/k400/videomamba_middle_mask/run_f8x224.sh`:
+- `PREFIX='YOUR_PATH_TO_VIDEOMAMBA'`
+- `DATA_PATH='YOUR_PATH_TO_VIDEOMAMBA'`
+- Adjust `GPUS`, `GPUS_PER_NODE` to match your hardware.
 
+**Common issue**:
+TypeError: Mamba.__init__() got an unexpected keyword argument 'bimamba'.
 
+**Workaround**: follow the solution described here:
+https://blog.csdn.net/qq_15557299/article/details/136973682
+
+Locate where `mamba_ssm` is installed and replace it with the official `mamba_ssm` code from the VideoMamba repo.
+
+---
 
 ## 📚 Citation
 
